@@ -7,6 +7,8 @@
 
   --background-color: #fff;
   --body-background-color: #e9f8e8; 
+
+  --btn-color: #000;
 }
 
 *, *::before, *::after {
