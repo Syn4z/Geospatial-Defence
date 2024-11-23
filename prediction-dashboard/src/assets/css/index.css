@@ -1,0 +1,24 @@
+:root {
+  --primary-font: "Open Sans", Arial, sans-serif;
+
+  --healthy-color: rgba(80, 141, 105, 0.5);
+  --warning-color: rgba(255, 187, 100, 0.6);
+  --danger-color: rgba(255, 104, 104, 0.6);
+
+  --background-color: #fff;
+  --body-background-color: #e9f8e8; 
+  --body-background-color-darker: #c7fdc3;
+
+  --btn-color: #000;
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--primary-font);
+}
+
+body {
+  background-color: var(--body-background-color);
+}
