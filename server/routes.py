@@ -1,8 +1,9 @@
 from flask import request, jsonify, Blueprint
+from datetime import datetime
 from sentinel_api import *
 from weather_api import *
 from models import *
-
+from gpt_api import *
 
 api = Blueprint('api', __name__)
 
@@ -58,6 +59,7 @@ def colored_image_ndmi():
 def pred_seed_rate():
     data = request.get_json()
 
+    seed_type = data['seed_type']
     coords = data['coordinates']
 
     weather_data = get_forecast_weather(coords)
@@ -65,3 +67,18 @@ def pred_seed_rate():
     seed_rate = predict_seed_rate(ndmi_data)
 
     return jsonify({'message': 'prediction', 'prediction': seed_rate.to_dict(orient="records")}), 200
+
+@api.route('/api/gpt_response/', methods=['POST'])
+def gpt_response():
+    data = request.get_json()
+
+    seed_type = data['seed_type']
+    planting_period = datetime.now().strftime("%Y-%m-%d")
+    coords = data['coordinates']
+
+    weather_data = get_forecast_weather(coords)
+    ndmi_data = predict_ndmi(weather_data)
+    seed_rate = predict_seed_rate(ndmi_data)
+    response = chat_gpt(seed_type, planting_period, seed_rate)
+
+    return jsonify({'message': 'response', 'response': response}), 200

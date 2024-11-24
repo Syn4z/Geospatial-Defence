@@ -38,9 +38,9 @@ def predict_seed_rate(weather_data: pd.DataFrame) -> pd.DataFrame:
     weather_data = weather_data[expected_order]
 
 
-    X = weather_data.drop(['Date'], axis=1).copy()
+    X = weather_data.drop(['Date'], axis=1)
     y = model.predict(X)
 
-    weather_data['Seed Rate'] = y
+    weather_data['Seed Rate %'] = y
 
     return weather_data
