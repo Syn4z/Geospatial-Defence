@@ -1,21 +1,6 @@
 import Metric from './Metric'
 
-const MetricsList = () => {
-  const metrics = [
-    { name: 'Flood Risk', label: 'Probability', value: 20, priority: 'low', imgPath: '/src/assets/icons/metrics/flood.png',
-      unit: '%', info: 'Low flood risk. No immediate action required.'
-    },
-    { name: 'Drought Risk', label: 'Probability', value: 50, priority: 'high', imgPath: '/src/assets/icons/metrics/drought.png',
-      unit: '%', info: 'High drought risk. Consider water-saving measures.'
-    },
-    { name: 'Soil Moisture', label: 'Index', value: 30, priority: 'medium', imgPath: '/src/assets/icons/metrics/soil.png',
-      unit: '%', info: 'Soil moisture is low. Water plants accordingly.'
-    },
-    { name: 'Rainfall Accumulation', label: 'Volume', value: 0, priority: 'medium', imgPath: '/src/assets/icons/metrics/rainfall.png', 
-      unit: 'mm', info: 'No rainfall accumulation. Monitor water sources.'
-    }
-  ];
-
+const MetricsList = ({ metrics }) => {
   // Sort metrics by priority from high to low
   const sortedMetrics = metrics.sort((a, b) => {
     const priorityOrder = { high: 1, medium: 2, low: 3 };
