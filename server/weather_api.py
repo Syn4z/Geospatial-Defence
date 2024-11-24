@@ -1,56 +1,54 @@
-import requests
+import openmeteo_requests
+import requests_cache
+import pandas as pd
+from retry_requests import retry
 
-# Your API key
-API_KEY = "851b80f03ae1ecfe7eaefb63b6fbc2d5"
+def get_forecast_weather(coordinates, forecast_days = 16):
 
-BASE_URL = "http://api.openweathermap.org/data/2.5/forecast"
+    # Setup the Open-Meteo API client with cache and retry on error
+    cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
+    retry_session = retry(cache_session, retries = 5, backoff_factor = 0.2)
+    openmeteo = openmeteo_requests.Client(session = retry_session)
 
+    # Make sure all required weather variables are listed here
+    # The order of variables in hourly or daily is important to assign them correctly below
+    url = "https://api.open-meteo.com/v1/forecast"
+    params = {
+        "latitude": 52.52,
+        "longitude": 13.41,
+        "hourly": ["temperature_2m", "relative_humidity_2m", "precipitation"],
+        "timezone": "auto",
+        "forecast_days": 16
+    }
+    responses = openmeteo.weather_api(url, params=params)
 
-# City IDS
-# London, UK - City ID: 2643743
-# New York, USA - City ID: 5128581
-# Paris, France - City ID: 2988507
-# Tokyo, Japan - City ID: 1850147
-# Los Angeles, USA - City ID: 5368361
-# Berlin, Germany - City ID: 2950159
-# Moscow, Russia - City ID: 524901
-# Sydney, Australia - City ID: 2147714
-# Mumbai, India - City ID: 1269515
-# Rome, Italy - City ID: 3169070
-# Beijing, China - City ID: 1816670
-# Cape Town, South Africa - City ID: 3369157
-# Mexico City, Mexico - City ID: 3530597
-# Dubai, UAE - City ID: 292223
-# Rio de Janeiro, Brazil - City ID: 3451190
-# Chisinau, Moldova is 617702.
-city_id = "1850147"
+    # Process first location. Add a for-loop for multiple locations or weather models
+    response = responses[0]
+    # print(f"Coordinates {response.Latitude()}°N {response.Longitude()}°E")
+    # print(f"Elevation {response.Elevation()} m asl")
+    # print(f"Timezone {response.Timezone()} {response.TimezoneAbbreviation()}")
+    # print(f"Timezone difference to GMT+0 {response.UtcOffsetSeconds()} s")
 
+    # Process hourly data. The order of variables needs to be the same as requested.
+    hourly = response.Hourly()
+    hourly_temperature_2m = hourly.Variables(0).ValuesAsNumpy()
+    hourly_relative_humidity_2m = hourly.Variables(1).ValuesAsNumpy()
+    hourly_precipitation = hourly.Variables(2).ValuesAsNumpy()
 
-# Construct the full URL with query parameters
-url = f"{BASE_URL}?id={city_id}&appid={API_KEY}&units=metric"  # units=metric for Celsius
+    hourly_data = {"date": pd.date_range(
+        start = pd.to_datetime(hourly.Time(), unit = "s", utc = True),
+        end = pd.to_datetime(hourly.TimeEnd(), unit = "s", utc = True),
+        freq = pd.Timedelta(seconds = hourly.Interval()),
+        inclusive = "left"
+    )}
+    hourly_data["temperature_2m"] = hourly_temperature_2m
+    hourly_data["relative_humidity_2m"] = hourly_relative_humidity_2m
+    hourly_data["precipitation"] = hourly_precipitation
 
-# Send a request to the OpenWeather API
-response = requests.get(url)
+    hourly_dataframe = pd.DataFrame(data = hourly_data)
+    # print(hourly_dataframe)
 
-# Check if the request was successful
-if response.status_code == 200:
-    data = response.json()  # Parse the JSON data
-    
-    # Extract and display the forecasted weather for the next 5 days
-    print(f"5-day forecast for city ID {city_id}:")
+    # Group hourly data into daily data
+    daily_dataframe = hourly_dataframe.resample("D", on = "date").mean()
 
-    # Loop through the forecast data (the API provides forecasts at 3-hour intervals)
-    for forecast in data['list']:
-        timestamp = forecast['dt_txt']  # Date and time of the forecast
-        temperature = forecast['main']['temp']  # Temperature in Celsius
-        weather_description = forecast['weather'][0]['description']  # Weather description
-        humidity = forecast['main']['humidity']  # Humidity
-        
-        # Display forecast data
-        print(f"Date and Time: {timestamp}")
-        print(f"Temperature: {temperature}°C")
-        print(f"Weather: {weather_description}")
-        print(f"Humidity: {humidity}%")
-        print("-" * 40)
-else:
-    print(f"Error: {response.status_code} - {response.text}")
+    return daily_dataframe
