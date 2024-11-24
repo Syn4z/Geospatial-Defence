@@ -1,0 +1,36 @@
+.user-info-wrapper {
+  margin-top: 2rem;
+}
+
+.go-back-btn {
+  background: none;
+  border: none;
+  margin-left: 2rem;
+}
+
+.go-back-img {
+  width: 25px;
+  height: auto;
+}
+
+.user-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.crop-type {
+  width: 230px;
+}
+
+.user-results {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 4rem;
+}

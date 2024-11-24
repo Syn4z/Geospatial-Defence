@@ -1,0 +1,13 @@
+.location-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;  
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.location-icon {
+  width: 30px;
+  height: auto;
+  margin-bottom: 1rem;
+}

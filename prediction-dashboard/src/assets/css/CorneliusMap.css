@@ -1,0 +1,32 @@
+.map-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.map-button {
+  padding: 0.5rem 1rem;
+  background-color: var(--background-color);
+  font-weight: bold;
+  border: 2px solid var(--btn-color);
+  outline: none;
+  border-radius: 30px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--btn-color);
+    color: var(--background-color);
+  }
+}
+
+.map-button.active {
+  background-color: var(--btn-color);
+  color: var(--background-color);
+}
+
+.video-wrapper {
+  width: 80vw;
+  margin: 0 auto;
+}
