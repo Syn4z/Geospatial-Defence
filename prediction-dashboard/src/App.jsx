@@ -1,19 +1,16 @@
 import './assets/css/App.css'
-import Location from './components/Location'
-import Logo from './components/Logo';
-import MetricsList from './components/MetricsList';
-import CorneliusMap from './components/CorneliusMap';
-import Footer from './components/Footer';
+import Main from './components/Main'
+import UserInfo from './components/UserInfo'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 function App() {
   return (
-    <main className="main-wrapper">
-      <Logo />
-      <Location name="Chișinău, Moldova" />
-      <MetricsList />
-      <CorneliusMap />
-      <Footer />
-    </main>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Main />} />
+        <Route path="/userinfo" element={<UserInfo />} />
+      </Routes>
+    </Router>
   ) 
 }
 
